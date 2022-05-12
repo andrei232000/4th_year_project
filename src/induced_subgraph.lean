@@ -118,19 +118,6 @@ begin
   exact ⟨v_in, w_in, G_adj⟩,
 end
 
-section finite
-
-variable  [fintype ↥R]
-
-instance verts_fintype : fintype ↥(induced_subgraph G R).verts :=
-begin
-  unfold induced_subgraph,
-  change fintype ↥R,
-  apply_instance,
-end
-
-end finite
-
 namespace decidable
 
 variable [decidable_eq V]
@@ -163,6 +150,31 @@ begin
 end
 
 end decidable
+
+section finite
+
+variables [fintype V]
+variables [decidable_pred (∈ R)]
+
+instance verts_fintype : fintype ↥(induced_subgraph G R).verts :=
+begin
+  unfold induced_subgraph,
+  change fintype ↥R,
+  apply_instance,
+end
+
+variable [decidable_eq V]
+variable [decidable_rel G.adj]
+
+def edge_subtype_finset (s : finset (sym2 V)) :
+finset ↥((G.induced_subgraph R).edge_finset) :=
+finset.subtype _ s
+
+def edge_complement_subtype_finset (s : finset (sym2 V)) :
+finset ↥(G.edge_finset \ (G.induced_subgraph R).edge_finset) :=
+finset.subtype _ s
+
+end finite
 
 end induced_subgraph
 
@@ -230,7 +242,7 @@ begin
   simp only [sym2.lift_mk, subtype.coe_mk, subtype.mk_eq_mk],
   exact hs.symm,
 end
- --!
+
 lemma card_edge_finset : ((complete_graph V).induced_subgraph R).edge_finset.card = (fintype.card ↥R).choose 2 :=
 begin
   suffices : (((complete_graph V).induced_subgraph R).edge_finset).card = (finset.powerset_len 2 R.to_finset).card,
@@ -298,8 +310,9 @@ begin
     ⟨v₁, v₁_in, v₂, v₂_in, v₁_ne_v₂⟩,
   exact ⟨v₁, v₂, v₁_in, v₂_in, v₁_ne_v₂⟩,
 end
- --!
-theorem edge_finset_nonempty (hk : k ≥ 2) : (((complete_graph V).induced_subgraph Rₖ).edge_finset).nonempty :=
+
+theorem edge_finset_nonempty (hk : k ≥ 2) :
+(((complete_graph V).induced_subgraph Rₖ).edge_finset).nonempty :=
 begin
   unfold subgraph.edge_finset,
   rw ← finset.coe_nonempty,

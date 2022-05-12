@@ -29,7 +29,8 @@ begin
   exact hs.symm,
 end
 
-lemma card_edge_finset : (complete_graph V).edge_finset.card = (fintype.card V).choose 2 :=
+lemma card_edge_finset : 
+(complete_graph V).edge_finset.card = (fintype.card V).choose 2 :=
 begin
   suffices : (complete_graph V).edge_finset.card = 
     (finset.powerset_len 2 (finset.univ : finset V)).card,
@@ -51,12 +52,23 @@ begin
     exact h_surj, },
 end
 
-theorem edge_set_nonempty (hV : fintype.card V ≥ 2) : ((complete_graph V).edge_set).nonempty :=
+theorem edge_set_nonempty (hV : fintype.card V ≥ 2) : 
+((complete_graph V).edge_set).nonempty :=
 begin
   unfold set.nonempty,
   unfold simple_graph.edge_set,
-  rcases fintype.ex_x_ne_y_of_card_ge_two hV with ⟨x, y, hxy⟩,
-  use ⟦(x, y)⟧,
+  rcases fintype.ex_x_ne_y_of_card_ge_two hV with ⟨v₁, v₂, v₁_ne_v₂⟩,
+  use ⟦(v₁, v₂)⟧, 
+  -- Lean infers that ⟦(x, y)⟧ is an edge using hxy and closes the goal early
+end
+
+theorem edge_finset_nonempty (hV : fintype.card V ≥ 2) :
+((complete_graph V).edge_finset).nonempty :=
+begin
+  unfold edge_finset,
+  rw ← finset.coe_nonempty,
+  rw set.coe_to_finset,
+  exact edge_set_nonempty hV,
 end
 
 end complete_graph

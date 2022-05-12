@@ -243,22 +243,25 @@ begin
     function.embedding.coe_fn_mk, exists_prop, prod.exists],
   split,
   { intro hA,
-    generalize h_cR : simple_graph.induced_subgraph.edge_subtype_finset
-      (complete_graph V) R (finset.map (function.embedding.subtype _) c) = cR,
-    use simple_graph.induced_subgraph.edge_complement_subtype_finset
-      (complete_graph V) R (finset.map (function.embedding.subtype _) c),
+    generalize h_cR : 
+      simple_graph.induced_subgraph.edge_subtype_finset
+        (complete_graph V) R (finset.map (function.embedding.subtype _) c) 
+      = cR,
+    generalize h_cRc : 
+      simple_graph.induced_subgraph.edge_complement_subtype_finset
+        (complete_graph V) R (finset.map (function.embedding.subtype _) c)
+      = cRc,
+    use cRc,
     use cR,
     rw ← @finset.map_inj _ _ 
       (function.embedding.subtype (∈ (complete_graph V).edge_finset)) _ _,
     rw subset_subtype.coe_type,
     have h_union : 
-      finset.map (function.embedding.subtype _) 
-        (simple_graph.induced_subgraph.edge_complement_subtype_finset
-          (complete_graph V) R 
-          (finset.map (function.embedding.subtype _) c)) ∪
+      finset.map (function.embedding.subtype _) cRc ∪
       finset.map (function.embedding.subtype _) cR =
       finset.map (function.embedding.subtype _) c,
     { rw ← h_cR,
+      rw ← h_cRc,
       unfold simple_graph.induced_subgraph.edge_complement_subtype_finset,
       unfold simple_graph.induced_subgraph.edge_subtype_finset,
       rw finset.subtype_map,
@@ -320,7 +323,7 @@ begin
           exact h_red.right, },
           { exfalso,
             have e₁_not_in := h_blue.left,
-            rw ← hcR,
+            rw ← h_cR at e₁_in,
             unfold simple_graph.induced_subgraph.edge_subtype_finset 
               at e₁_in,
             simp only [simple_graph.mem_edge_finset,

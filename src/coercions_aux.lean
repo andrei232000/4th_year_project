@@ -1,14 +1,6 @@
 import data.finset.basic
 import data.fintype.basic
 
-section
-variable {α : Type*}
-variable {t : set α}
-variable t' : {s // s ⊆ t}
-
-def set_subtype_coe : set ↥
-end
-
 namespace subset_subtype
 
 variable {α : Type*}
